@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de inventario V1 - Casos de uso</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1f2328; --muted: #656d76; --line: #d0d7de;
+    --op: #0f766e; --op-bg: #ccfbf1;
+    --adm: #6d28d9; --adm-bg: #ede9fe;
+    --ok: #166534; --ok-bg: #dcfce7; --bad: #b91c1c; --bad-bg: #fee2e2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8b949e; --line: #30363d;
+      --op: #5eead4; --op-bg: #134e4a;
+      --adm: #c4b5fd; --adm-bg: #3b2a6b;
+      --ok: #86efac; --ok-bg: #14532d; --bad: #fca5a5; --bad-bg: #7f1d1d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  h2 { font-size: 1.25rem; margin: 40px 0 12px; }
+  p.sub { color: var(--muted); margin: 0 0 8px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; min-width: 640px; }
+  svg text { fill: var(--text); font-family: inherit; font-size: 13px; }
+  .box { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .uc-op { fill: var(--op-bg); stroke: var(--op); stroke-width: 1.5; }
+  .uc-adm { fill: var(--adm-bg); stroke: var(--adm); stroke-width: 1.5; }
+  .ln-op { stroke: var(--op); stroke-width: 1.2; fill: none; }
+  .ln-adm { stroke: var(--adm); stroke-width: 1.2; fill: none; }
+  .actor { stroke-width: 2; fill: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: .9rem; color: var(--muted); }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1.5px solid; }
+  .dot.op { background: var(--op-bg); border-color: var(--op); }
+  .dot.adm { background: var(--adm-bg); border-color: var(--adm); }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .tag { display: inline-block; font-size: .75rem; padding: 1px 8px; border-radius: 99px; margin: 1px 2px 1px 0; font-weight: 600; }
+  .tag.op { background: var(--op-bg); color: var(--op); }
+  .tag.adm { background: var(--adm-bg); color: var(--adm); }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+  .step { flex: 1 1 150px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--card); font-size: .88rem; }
+  .step b { display: block; margin-bottom: 2px; }
+  .step.ok { border-color: var(--ok); background: var(--ok-bg); }
+  .step.bad { border-color: var(--bad); background: var(--bad-bg); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  ul { margin: 6px 0 0; padding-left: 20px; }
+  .wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Control de inventario V1</h1>
+  <p class="sub">Diagrama y casos de uso derivados de SPEC-2.md. Dos roles, dos almacenes fijos (San Carlos y Game Palace).</p>
+
+  <h2>Diagrama de casos de uso</h2>
+  <div class="card">
+    <svg viewBox="0 0 1000 580" role="img" aria-label="Diagrama de casos de uso con actores Operador y Administrador">
+      <defs>
+        <marker id="tri" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+          <path d="M1,1 L11,6 L1,11 Z" fill="var(--card)" stroke="var(--adm)" stroke-width="1.5"/>
+        </marker>
+      </defs>
+
+      <!-- sistema -->
+      <rect class="box" x="170" y="14" width="660" height="506" rx="12"/>
+      <text x="500" y="38" text-anchor="middle" style="font-weight:600">Sistema de control de inventario</text>
+
+      <!-- líneas operador -> casos compartidos -->
+      <g class="ln-op">
+        <line x1="92" y1="262" x2="195" y2="82"/>
+        <line x1="92" y1="262" x2="195" y2="150"/>
+        <line x1="92" y1="262" x2="195" y2="218"/>
+        <line x1="92" y1="262" x2="195" y2="286"/>
+        <line x1="92" y1="262" x2="195" y2="354"/>
+        <line x1="92" y1="262" x2="195" y2="422"/>
+        <line x1="92" y1="262" x2="195" y2="490"/>
+      </g>
+      <!-- líneas admin -> casos exclusivos -->
+      <g class="ln-adm">
+        <line x1="908" y1="262" x2="815" y2="90"/>
+        <line x1="908" y1="262" x2="815" y2="170"/>
+        <line x1="908" y1="262" x2="815" y2="250"/>
+        <line x1="908" y1="262" x2="815" y2="330"/>
+        <line x1="908" y1="262" x2="815" y2="410"/>
+        <line x1="908" y1="262" x2="815" y2="490"/>
+      </g>
+
+      <!-- casos compartidos (cx=330) -->
+      <g class="uc-op">
+        <ellipse cx="330" cy="82" rx="135" ry="24"/>
+        <ellipse cx="330" cy="150" rx="135" ry="24"/>
+        <ellipse cx="330" cy="218" rx="135" ry="24"/>
+        <ellipse cx="330" cy="286" rx="135" ry="24"/>
+        <ellipse cx="330" cy="354" rx="135" ry="24"/>
+        <ellipse cx="330" cy="422" rx="135" ry="24"/>
+        <ellipse cx="330" cy="490" rx="135" ry="24"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="330" y="86">CU1 Iniciar sesión</text>
+        <text x="330" y="154">CU2 Registrar entrada</text>
+        <text x="330" y="222">CU3 Registrar salida</text>
+        <text x="330" y="290">CU4 Consultar stock actual</text>
+        <text x="330" y="358">CU5 Consultar historial</text>
+        <text x="330" y="426">CU6 Exportar CSV</text>
+        <text x="330" y="494">CU7 Ver panel de alertas</text>
+      </g>
+
+      <!-- casos exclusivos admin (cx=680) -->
+      <g class="uc-adm">
+        <ellipse cx="680" cy="90" rx="135" ry="24"/>
+        <ellipse cx="680" cy="170" rx="135" ry="24"/>
+        <ellipse cx="680" cy="250" rx="135" ry="24"/>
+        <ellipse cx="680" cy="330" rx="135" ry="24"/>
+        <ellipse cx="680" cy="410" rx="135" ry="24"/>
+        <ellipse cx="680" cy="490" rx="135" ry="24"/>
+      </g>
+      <g text-anchor="middle">
+        <text x="680" y="94">CU8 Gestionar usuarios</text>
+        <text x="680" y="174">CU9 Gestionar productos</text>
+        <text x="680" y="254">CU10 Definir stock mínimo</text>
+        <text x="680" y="334">CU11 Registrar ajuste</text>
+        <text x="680" y="414">CU12 Ver y editar costo</text>
+        <text x="680" y="494">CU13 Renombrar almacenes</text>
+      </g>
+
+      <!-- actor operador -->
+      <g class="actor" stroke="var(--op)">
+        <circle cx="70" cy="222" r="16"/>
+        <line x1="70" y1="238" x2="70" y2="290"/>
+        <line x1="40" y1="256" x2="100" y2="256"/>
+        <line x1="70" y1="290" x2="48" y2="326"/>
+        <line x1="70" y1="290" x2="92" y2="326"/>
+      </g>
+      <text x="70" y="348" text-anchor="middle" style="font-weight:600">Operador</text>
+
+      <!-- actor admin -->
+      <g class="actor" stroke="var(--adm)">
+        <circle cx="930" cy="222" r="16"/>
+        <line x1="930" y1="238" x2="930" y2="290"/>
+        <line x1="900" y1="256" x2="960" y2="256"/>
+        <line x1="930" y1="290" x2="908" y2="326"/>
+        <line x1="930" y1="290" x2="952" y2="326"/>
+      </g>
+      <text x="930" y="348" text-anchor="middle" style="font-weight:600">Administrador</text>
+
+      <!-- herencia admin -> operador -->
+      <path d="M930 360 V556 H70 V362" fill="none" stroke="var(--adm)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#tri)"/>
+      <text x="500" y="572" text-anchor="middle" style="fill:var(--adm)">El administrador hereda todo lo del operador (CU1 a CU7)</text>
+    </svg>
+    <div class="legend">
+      <span><span class="dot op"></span>Casos de uso de ambos roles</span>
+      <span><span class="dot adm"></span>Solo administrador</span>
+    </div>
+  </div>
+
+  <h2>Casos de uso</h2>
+  <div class="card wrap">
+    <table>
+      <thead><tr><th>Caso</th><th>Actor</th><th>Reglas clave</th></tr></thead>
+      <tbody>
+        <tr><td><b>CU1</b> Iniciar sesión</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Usuario y contraseña. Sin registro público ni recuperación por correo. Un usuario desactivado pierde el acceso de inmediato (sesiones cerradas).</td></tr>
+        <tr><td><b>CU2</b> Registrar entrada</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Cantidad &gt; 0. Nota opcional (el stock inicial es una entrada con nota "stock inicial"). Hace upsert del saldo por producto y almacén. Producto inactivo no admite movimientos.</td></tr>
+        <tr><td><b>CU3</b> Registrar salida</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Cantidad &gt; 0. Se rechaza con mensaje claro si deja el stock negativo (UPDATE condicional más CHECK &gt;= 0). Dos salidas simultáneas nunca dejan stock negativo.</td></tr>
+        <tr><td><b>CU4</b> Consultar stock actual</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Filtros por producto y almacén. Incluye inactivos con saldo, marcados. El operador no ve el costo.</td></tr>
+        <tr><td><b>CU5</b> Consultar historial</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Exige rango de fechas (día en America/Lima). Filtros por producto, almacén y tipo. Cada movimiento muestra usuario y fecha en hora de Lima.</td></tr>
+        <tr><td><b>CU6</b> Exportar CSV</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Aplica a stock e historial. Es de consulta, no respaldo. El CSV del operador no incluye el costo.</td></tr>
+        <tr><td><b>CU7</b> Ver panel de alertas</td><td><span class="tag op">Operador</span><span class="tag adm">Admin</span></td><td>Productos con stock &le; mínimo, por almacén. Sin saldo cuenta como 0. Mínimo 0 o sin definir no alerta. Los inactivos no alertan.</td></tr>
+        <tr><td><b>CU8</b> Gestionar usuarios</td><td><span class="tag adm">Admin</span></td><td>Crear usuarios, restablecer contraseñas, desactivar (nunca borrar). Asignar rol.</td></tr>
+        <tr><td><b>CU9</b> Gestionar productos</td><td><span class="tag adm">Admin</span></td><td>SKU, nombre, categoría, unidad y costo opcional. SKU único, en mayúsculas, inmutable con movimientos. Desactivar, nunca borrar.</td></tr>
+        <tr><td><b>CU10</b> Definir stock mínimo</td><td><span class="tag adm">Admin</span></td><td>Por producto y almacén.</td></tr>
+        <tr><td><b>CU11</b> Registrar ajuste</td><td><span class="tag adm">Admin</span></td><td>Cantidad con signo distinta de 0 y motivo obligatorio. No puede dejar stock negativo. Es la única forma de corregir un error (sin reversa en V1).</td></tr>
+        <tr><td><b>CU12</b> Ver y editar costo</td><td><span class="tag adm">Admin</span></td><td>Solo informativo, sin valorización. Nunca se envía al operador (pantalla, API ni CSV).</td></tr>
+        <tr><td><b>CU13</b> Renombrar almacenes</td><td><span class="tag adm">Admin</span></td><td>Los dos almacenes salen del seed. No se crean ni se borran.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Flujo de un movimiento</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="step"><b>1. Formulario</b>Recuerda el último almacén. Busca producto por SKU o nombre.</div>
+      <div class="step"><b>2. Validación de permiso</b>En el servidor. Los ajustes solo para administrador.</div>
+      <div class="step"><b>3. Validación de datos</b>Entrada/salida &gt; 0, ajuste &ne; 0 con motivo. Producto activo.</div>
+      <div class="step"><b>4. Transacción</b>Inserta el movimiento y actualiza el saldo (UPDATE condicional o upsert).</div>
+      <div class="step ok"><b>5a. Éxito</b>Saldo &ge; 0. Movimiento guardado con usuario y fecha UTC.</div>
+      <div class="step bad"><b>5b. Rechazo</b>Dejaría stock negativo. Se revierte todo y se muestra un mensaje claro.</div>
+    </div>
+  </div>
+
+  <h2>Límites de la V1</h2>
+  <div class="grid">
+    <div class="card"><b>Incluido</b>
+      <ul><li>Entradas, salidas y ajustes</li><li>Stock por almacén y alertas de mínimo</li><li>Historial y CSV de consulta</li><li>Usuarios con dos roles</li></ul>
+    </div>
+    <div class="card"><b>Fuera de la V1</b>
+      <ul><li>Transferencias y movimientos de reversa</li><li>Lotes, vencimientos, proveedores y compras</li><li>Valorización, importación masiva, escáner</li><li>Alertas por correo/WhatsApp, recuperación de contraseña, respaldos automáticos</li></ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>
